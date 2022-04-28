@@ -20,39 +20,50 @@ class DetailViewController: UIViewController {
     
     @IBOutlet weak var heightLabel: UILabel!
     @IBOutlet weak var weightLabel: UILabel!
-    
     @IBOutlet weak var fullnameLabel: UILabel!
     @IBOutlet weak var publisherLabel: UILabel!
     @IBOutlet weak var firstAppearance: UILabel!
+    @IBOutlet weak var alignment: UILabel!
     
-    
-//    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var backgroundImage: UIImageView!
     
     var hero: Hero!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUI()
         setup()
+    }
+    
+    private func setUI() {
+        imageView.layer.cornerRadius = 15
+        backgroundImage.layer.opacity = 0.3
+        
+        if let imageData = NetworkManager.shared.fetchImage(urlString: hero.images?.lg ?? "") {
+            DispatchQueue.main.async {
+                self.backgroundImage.image = UIImage(data: imageData)
+            }
+        }
     }
     
     private func setup() {
         title = hero.name
         
-        intelligenceLabel.text = "Intelligence: \(hero.powerstats?.intelligence ?? 0)"
-        strengthLabel.text = "Strenght: \(hero.powerstats?.strength ?? 0)"
-        speedLabel.text = "Speed: \(hero.powerstats?.speed ?? 0)"
-        durabilityLabel.text = "Durability: \(hero.powerstats?.durability ?? 0)"
-        powerLabel.text = "Power: \(hero.powerstats?.power ?? 0)"
-        combatLabel.text = "Combat: \(hero.powerstats?.combat ?? 0)"
+        intelligenceLabel.text = "Интелект: \(hero.powerstats?.intelligence ?? 0) 🧠"
+        strengthLabel.text = "Сила: \(hero.powerstats?.strength ?? 0) 💪"
+        speedLabel.text = "Скорость: \(hero.powerstats?.speed ?? 0) 👟"
+        durabilityLabel.text = "Прочность: \(hero.powerstats?.durability ?? 0) 🛡"
+        powerLabel.text = "Мощь: \(hero.powerstats?.power ?? 0) ⚔️"
+        combatLabel.text = "Бой: \(hero.powerstats?.combat ?? 0) 🥊"
         
-        heightLabel.text = "Height: \(hero.appearance?.height?[0] ?? "Nope")"
-        weightLabel.text = "Weight: \(hero.appearance?.weight?[0] ?? "Nope")"
+        heightLabel.text = "Рост: \(hero.appearance?.height?[0] ?? "Nope")"
+        weightLabel.text = "Вес: \(hero.appearance?.weight?[0] ?? "Nope")"
+        fullnameLabel.text = "Полное имя: \(hero.biography?.fullName ?? "...")"
+        publisherLabel.text = "Издательство: \(hero.biography?.publisher ?? "...")"
+        firstAppearance.text = "Первое появление: \(hero.biography?.firstAppearance ?? "No")"
+        alignment.text = "Принадлежность: \(hero.biography?.alignment ?? "")"
         
-        fullnameLabel.text = "Fullname: \(hero.biography?.fullName ?? "...")"
-        publisherLabel.text = "Publisher: \(hero.biography?.publisher ?? "...")"
-        firstAppearance.text = "First appearance: \(hero.biography?.firstAppearance ?? "No")"
-        
-        if let imageData = NetworkManager.shared.fetchImage(urlString: hero.images?.lg ?? "") {
+        if let imageData = NetworkManager.shared.fetchImage(urlString: hero.images?.sm ?? "") {
             imageView.image = UIImage(data: imageData)
         }
     }

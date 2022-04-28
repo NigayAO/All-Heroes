@@ -51,11 +51,14 @@ extension MainCollectionViewController {
     private func setupCell() {
         title = "Heroes and Villains"
         
+        let width = UIScreen.main.bounds.width / 2 - 20
+        let height = UIScreen.main.bounds.height / 2.5
+        
         collectionView.backgroundColor = .gray
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
         flowLayout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        flowLayout.itemSize = CGSize(width: 140, height: 220)
+        flowLayout.itemSize = CGSize(width: width, height: height)
         collectionView.collectionViewLayout = flowLayout
     }
     
