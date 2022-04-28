@@ -56,8 +56,8 @@ class DetailViewController: UIViewController {
         powerLabel.text = "Мощь: \(hero.powerstats?.power ?? 0) ⚔️"
         combatLabel.text = "Бой: \(hero.powerstats?.combat ?? 0) 🥊"
         
-        heightLabel.text = "Рост: \(hero.appearance?.height?[0] ?? "Nope")"
-        weightLabel.text = "Вес: \(hero.appearance?.weight?[0] ?? "Nope")"
+        heightLabel.text = "Рост: \(hero.appearance?.height?[0] ?? "0")"
+        weightLabel.text = "Вес: \(hero.appearance?.weight?[0] ?? "0")"
         fullnameLabel.text = "Полное имя: \(hero.biography?.fullName ?? "...")"
         publisherLabel.text = "Издательство: \(hero.biography?.publisher ?? "...")"
         firstAppearance.text = "Первое появление: \(hero.biography?.firstAppearance ?? "No")"
