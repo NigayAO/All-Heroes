@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+class HeroDetails: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     
@@ -49,19 +49,19 @@ class DetailViewController: UIViewController {
     private func setup() {
         title = hero.name
         
-        intelligenceLabel.text = "Интелект: \(hero.powerstats?.intelligence ?? 0) 🧠"
-        strengthLabel.text = "Сила: \(hero.powerstats?.strength ?? 0) 💪"
-        speedLabel.text = "Скорость: \(hero.powerstats?.speed ?? 0) 👟"
-        durabilityLabel.text = "Прочность: \(hero.powerstats?.durability ?? 0) 🛡"
-        powerLabel.text = "Мощь: \(hero.powerstats?.power ?? 0) ⚔️"
-        combatLabel.text = "Бой: \(hero.powerstats?.combat ?? 0) 🥊"
+        intelligenceLabel.text = "Intelligence: \(hero.powerstats?.intelligence ?? 0) 🧠"
+        strengthLabel.text = "Strength: \(hero.powerstats?.strength ?? 0) 💪"
+        speedLabel.text = "Speed: \(hero.powerstats?.speed ?? 0) 👟"
+        durabilityLabel.text = "Durability: \(hero.powerstats?.durability ?? 0) 🛡"
+        powerLabel.text = "Power: \(hero.powerstats?.power ?? 0) ⚔️"
+        combatLabel.text = "Combar: \(hero.powerstats?.combat ?? 0) 🥊"
         
-        heightLabel.text = "Рост: \(hero.appearance?.height?[0] ?? "0")"
-        weightLabel.text = "Вес: \(hero.appearance?.weight?[0] ?? "0")"
-        fullnameLabel.text = "Полное имя: \(hero.biography?.fullName ?? "...")"
-        publisherLabel.text = "Издательство: \(hero.biography?.publisher ?? "...")"
-        firstAppearance.text = "Первое появление: \(hero.biography?.firstAppearance ?? "No")"
-        alignment.text = "Принадлежность: \(hero.biography?.alignment ?? "")"
+        heightLabel.text = "Height: \(hero.appearance?.height?[0] ?? "0")"
+        weightLabel.text = "Weight: \(hero.appearance?.weight?[0] ?? "0")"
+        fullnameLabel.text = "Fullname: \(hero.biography?.fullName ?? "...")"
+        publisherLabel.text = "Publisher: \(hero.biography?.publisher ?? "...")"
+        firstAppearance.text = "First appearence: \(hero.biography?.firstAppearance ?? "No")"
+        alignment.text = "Alignment: \(hero.biography?.alignment ?? "")"
         
         if let imageData = NetworkManager.shared.fetchImage(urlString: hero.images?.sm ?? "") {
             imageView.image = UIImage(data: imageData)

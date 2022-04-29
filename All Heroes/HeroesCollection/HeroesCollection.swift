@@ -9,10 +9,10 @@ import UIKit
 
 private let reuseIdentifier = "hero"
 
-class MainCollectionViewController: UICollectionViewController {
+class HeroesCollection: UICollectionViewController {
     
     private let searchController = UISearchController(searchResultsController: nil)
-    private var filteredArray: [Hero] = []
+    
     private var searchBarIsEmpty: Bool {
         guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
@@ -22,43 +22,50 @@ class MainCollectionViewController: UICollectionViewController {
         return searchController.isActive && (!searchBarIsEmpty || searchBarScopeIsFiltering)
     }
     
-    private var heroes: [Hero] = []
+    private var viewModel: HeroCollectionViewModelProtocol! {
+        didSet {
+            viewModel.fetchHeroes { [unowned self] in
+                self.collectionView.reloadData()
+            }
+        }
+    }
+    private var filteredArray: [Hero] = []
     private var senderHero: Hero!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = HeroCollectionViewModel()
         setupCell()
-        fetchStartData()
         setupSearchController()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let detailVC = segue.destination as? DetailViewController else { return }
+        guard let detailVC = segue.destination as? HeroDetails else { return }
         detailVC.hero = senderHero
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        isFiltering ? filteredArray.count : heroes.count
+        isFiltering ? filteredArray.count : viewModel.numberOfItems()
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! HeroCell
-        let hero = isFiltering ? filteredArray[indexPath.row] : heroes[indexPath.row]
+//        let hero = isFiltering ? filteredArray[indexPath.row] : viewModel.heroes[indexPath.row]
         cell.activityIndicator.startAnimating()
         cell.activityIndicator.hidesWhenStopped = true
         cell.imageView.layer.cornerRadius = 15
-        cell.initialSetup(hero: hero)
+        cell.heroCellViewModel = viewModel.heroCellViewModel(indexPath: indexPath)
         return cell
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        senderHero = isFiltering ? filteredArray[indexPath.row] : heroes[indexPath.row]
+        senderHero = isFiltering ? filteredArray[indexPath.row] : viewModel.heroes[indexPath.row]
         performSegue(withIdentifier: "showDetail", sender: self)
     }
 }
 
 //MARK: - Private methods
-extension MainCollectionViewController {
+extension HeroesCollection {
     private func setupCell() {
         title = "Heroes and Villains"
         
@@ -71,45 +78,26 @@ extension MainCollectionViewController {
         flowLayout.itemSize = CGSize(width: width, height: height)
         collectionView.collectionViewLayout = flowLayout
     }
-    
-    private func fetchStartData() {
-        NetworkManager.shared.fetchData { result in
-            switch result {
-            case .success(let receivedHeroes):
-                self.heroes = receivedHeroes
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                }
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
 }
 
 //MARK: - UISearchController
-extension MainCollectionViewController: UISearchResultsUpdating, UISearchBarDelegate {
+extension HeroesCollection: UISearchResultsUpdating, UISearchBarDelegate {
     private func setupSearchController() {
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.scopeButtonTitles = ["Среди всех", "Издательство", "Сторона"]
-        searchController.searchBar.placeholder = "Search"
+        searchController.searchBar.scopeButtonTitles = ["All Heroes", "Publisher", "Alignment"]
+        searchController.searchBar.placeholder = "Поиск"
         navigationItem.searchController = searchController
         definesPresentationContext = true
     }
     
-    func updateSearchResults(for searchController: UISearchController) {
-        let searchBar = searchController.searchBar
-        let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
-        filterContentForSearchText(for: searchController.searchBar.text!, scope: scope)
-    }
-    
-    private func filterContentForSearchText(for searchText: String, scope: String = "All") {
-        filteredArray = heroes.filter({ hero in
+    private func filterContentForSearchText(for searchText: String, scope: String = "All Heroes") {
+        filteredArray = viewModel.heroes.filter({ hero in
             guard let name = hero.name else { return false }
             guard let publisher = hero.biography?.publisher else { return false }
             guard let alignment = hero.biography?.alignment else { return false }
+            
             switch scope {
             case "Alignment":
                 return alignment.lowercased().contains(searchText.lowercased())
@@ -120,6 +108,12 @@ extension MainCollectionViewController: UISearchResultsUpdating, UISearchBarDele
             }
         })
         collectionView.reloadData()
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
+        filterContentForSearchText(for: searchController.searchBar.text!, scope: scope)
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
