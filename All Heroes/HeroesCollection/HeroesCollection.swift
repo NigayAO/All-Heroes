@@ -17,6 +17,7 @@ class HeroesCollection: UICollectionViewController {
         guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
     }
+    
     private var isFiltering: Bool {
         let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
         return searchController.isActive && (!searchBarIsEmpty || searchBarScopeIsFiltering)
@@ -29,8 +30,6 @@ class HeroesCollection: UICollectionViewController {
             }
         }
     }
-    private var filteredArray: [Hero] = []
-    private var senderHero: Hero!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,26 +40,25 @@ class HeroesCollection: UICollectionViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let detailVC = segue.destination as? HeroDetails else { return }
-        detailVC.hero = senderHero
+        detailVC.viewModel = sender as? HeroDetailsViewModelProtocol
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        isFiltering ? filteredArray.count : viewModel.numberOfItems()
+        viewModel.getHero(isFiltering: isFiltering).count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! HeroCell
-//        let hero = isFiltering ? filteredArray[indexPath.row] : viewModel.heroes[indexPath.row]
         cell.activityIndicator.startAnimating()
         cell.activityIndicator.hidesWhenStopped = true
         cell.imageView.layer.cornerRadius = 15
-        cell.heroCellViewModel = viewModel.heroCellViewModel(indexPath: indexPath)
+        cell.heroCellViewModel = viewModel.heroCellViewModel(isFiltering: isFiltering, indexPath: indexPath)
         return cell
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        senderHero = isFiltering ? filteredArray[indexPath.row] : viewModel.heroes[indexPath.row]
-        performSegue(withIdentifier: "showDetail", sender: self)
+        let heroDetailsViewModel = viewModel.heroDetailsViewModel(at: indexPath, isFiltering: isFiltering)
+        performSegue(withIdentifier: "showDetail", sender: heroDetailsViewModel)
     }
 }
 
@@ -92,32 +90,18 @@ extension HeroesCollection: UISearchResultsUpdating, UISearchBarDelegate {
         definesPresentationContext = true
     }
     
-    private func filterContentForSearchText(for searchText: String, scope: String = "All Heroes") {
-        filteredArray = viewModel.heroes.filter({ hero in
-            guard let name = hero.name else { return false }
-            guard let publisher = hero.biography?.publisher else { return false }
-            guard let alignment = hero.biography?.alignment else { return false }
-            
-            switch scope {
-            case "Alignment":
-                return alignment.lowercased().contains(searchText.lowercased())
-            case "Publisher":
-                return publisher.lowercased().contains(searchText.lowercased())
-            default:
-                return name.lowercased().contains(searchText.lowercased())
-            }
-        })
-        collectionView.reloadData()
-    }
-    
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
-        filterContentForSearchText(for: searchController.searchBar.text!, scope: scope)
+        viewModel.filterContentForSearchText(for: searchController.searchBar.text!, scope: scope) {
+            self.collectionView.reloadData()
+        }
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        filterContentForSearchText(for: searchBar.text!, scope: searchBar.scopeButtonTitles![selectedScope])
+        viewModel.filterContentForSearchText(for: searchController.searchBar.text!, scope: searchBar.scopeButtonTitles![selectedScope]) {
+            self.collectionView.reloadData()
+        }
     }
 }
 

@@ -27,7 +27,7 @@ class HeroDetails: UIViewController {
     
     @IBOutlet weak var backgroundImage: UIImageView!
     
-    var hero: Hero!
+    var viewModel: HeroDetailsViewModelProtocol!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +39,7 @@ class HeroDetails: UIViewController {
         imageView.layer.cornerRadius = 15
         backgroundImage.layer.opacity = 0.3
         
-        if let imageData = NetworkManager.shared.fetchImage(urlString: hero.images?.lg ?? "") {
+        if let imageData = viewModel.backgroundImage {
             DispatchQueue.main.async {
                 self.backgroundImage.image = UIImage(data: imageData)
             }
@@ -47,24 +47,26 @@ class HeroDetails: UIViewController {
     }
     
     private func setup() {
-        title = hero.name
+        title = viewModel.name
         
-        intelligenceLabel.text = "Intelligence: \(hero.powerstats?.intelligence ?? 0) 🧠"
-        strengthLabel.text = "Strength: \(hero.powerstats?.strength ?? 0) 💪"
-        speedLabel.text = "Speed: \(hero.powerstats?.speed ?? 0) 👟"
-        durabilityLabel.text = "Durability: \(hero.powerstats?.durability ?? 0) 🛡"
-        powerLabel.text = "Power: \(hero.powerstats?.power ?? 0) ⚔️"
-        combatLabel.text = "Combar: \(hero.powerstats?.combat ?? 0) 🥊"
+        intelligenceLabel.text = viewModel.intelligence
+        strengthLabel.text = viewModel.strength
+        speedLabel.text = viewModel.speed
+        durabilityLabel.text = viewModel.durability
+        powerLabel.text = viewModel.power
+        combatLabel.text = viewModel.combat
         
-        heightLabel.text = "Height: \(hero.appearance?.height?[0] ?? "0")"
-        weightLabel.text = "Weight: \(hero.appearance?.weight?[0] ?? "0")"
-        fullnameLabel.text = "Fullname: \(hero.biography?.fullName ?? "...")"
-        publisherLabel.text = "Publisher: \(hero.biography?.publisher ?? "...")"
-        firstAppearance.text = "First appearence: \(hero.biography?.firstAppearance ?? "No")"
-        alignment.text = "Alignment: \(hero.biography?.alignment ?? "")"
+        heightLabel.text = viewModel.height
+        weightLabel.text = viewModel.weight
+        fullnameLabel.text = viewModel.fullname
+        publisherLabel.text = viewModel.publisher
+        firstAppearance.text = viewModel.firstAppearance
+        alignment.text = viewModel.alignment
         
-        if let imageData = NetworkManager.shared.fetchImage(urlString: hero.images?.sm ?? "") {
-            imageView.image = UIImage(data: imageData)
+        if let imageData = viewModel.imageView {
+            DispatchQueue.main.async {
+                self.imageView.image = UIImage(data: imageData)
+            }
         }
     }
 }

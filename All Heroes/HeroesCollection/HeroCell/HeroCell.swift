@@ -12,14 +12,6 @@ class HeroCell: UICollectionViewCell {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-//    func initialSetup(hero: Hero) {
-//        nameLabel.text = hero.name
-//        if let imageData = NetworkManager.shared.fetchImage(urlString: hero.images?.sm ?? "") {
-//            imageView.image = UIImage(data: imageData)
-//            activityIndicator.stopAnimating()
-//        }
-//    }
-    
     var heroCellViewModel: HeroCellViewModelProtocol! {
         didSet {
             nameLabel.text = heroCellViewModel.name

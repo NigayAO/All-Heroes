@@ -12,13 +12,16 @@ protocol HeroCollectionViewModelProtocol {
     
     func fetchHeroes(completion: @escaping() -> Void)
     func numberOfItems() -> Int
-    func heroCellViewModel(indexPath: IndexPath) -> HeroCellViewModelProtocol
+    func heroCellViewModel(isFiltering: Bool, indexPath: IndexPath) -> HeroCellViewModelProtocol
+    func filterContentForSearchText(for searchText: String, scope: String, completion: @escaping() -> Void)
+    func getHero(isFiltering: Bool) -> [Hero]
+    func heroDetailsViewModel(at indexPath: IndexPath, isFiltering: Bool) -> HeroDetailsViewModelProtocol
 }
 
 class HeroCollectionViewModel: HeroCollectionViewModelProtocol {
     var heroes = [Hero]()
     var filteredHeroes = [Hero]()
-    
+        
     func fetchHeroes(completion: @escaping () -> Void) {
         NetworkManager.shared.fetchData { result in
             switch result {
@@ -37,8 +40,8 @@ class HeroCollectionViewModel: HeroCollectionViewModelProtocol {
         heroes.count
     }
     
-    func heroCellViewModel(indexPath: IndexPath) -> HeroCellViewModelProtocol {
-        HeroCellViewModel(hero: heroes[indexPath.item])
+    func heroCellViewModel(isFiltering: Bool, indexPath: IndexPath) -> HeroCellViewModelProtocol {
+        HeroCellViewModel(hero: getHero(isFiltering: isFiltering)[indexPath.item])
     }
     
     func numberOfItems(isFiltering: Bool) -> Int {
@@ -63,5 +66,13 @@ class HeroCollectionViewModel: HeroCollectionViewModelProtocol {
         DispatchQueue.main.async {
             completion()
         }
+    }
+    
+    func getHero(isFiltering: Bool) -> [Hero] {
+        isFiltering ? filteredHeroes : heroes
+    }
+    
+    func heroDetailsViewModel(at indexPath: IndexPath, isFiltering: Bool) -> HeroDetailsViewModelProtocol {
+        HeroDetailsViewModel(hero: getHero(isFiltering: isFiltering)[indexPath.item])
     }
 }
