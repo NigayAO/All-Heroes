@@ -76,10 +76,7 @@ extension HeroesCollection {
         flowLayout.itemSize = CGSize(width: width, height: height)
         collectionView.collectionViewLayout = flowLayout
     }
-}
-
-//MARK: - UISearchController
-extension HeroesCollection: UISearchResultsUpdating, UISearchBarDelegate {
+    
     private func setupSearchController() {
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
@@ -89,7 +86,10 @@ extension HeroesCollection: UISearchResultsUpdating, UISearchBarDelegate {
         navigationItem.searchController = searchController
         definesPresentationContext = true
     }
-    
+}
+
+//MARK: - UISearchController
+extension HeroesCollection: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]

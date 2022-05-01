@@ -34,7 +34,10 @@ class HeroDetails: UIViewController {
         setUI()
         setup()
     }
-    
+}
+
+//MARK: - Private methods
+extension HeroDetails {
     private func setUI() {
         imageView.layer.cornerRadius = 15
         backgroundImage.layer.opacity = 0.3

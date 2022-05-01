@@ -11,7 +11,6 @@ protocol HeroCollectionViewModelProtocol {
     var heroes: [Hero] { get }
     
     func fetchHeroes(completion: @escaping() -> Void)
-    func numberOfItems() -> Int
     func heroCellViewModel(isFiltering: Bool, indexPath: IndexPath) -> HeroCellViewModelProtocol
     func filterContentForSearchText(for searchText: String, scope: String, completion: @escaping() -> Void)
     func getHero(isFiltering: Bool) -> [Hero]
@@ -20,7 +19,7 @@ protocol HeroCollectionViewModelProtocol {
 
 class HeroCollectionViewModel: HeroCollectionViewModelProtocol {
     var heroes = [Hero]()
-    var filteredHeroes = [Hero]()
+    private var filteredHeroes = [Hero]()
         
     func fetchHeroes(completion: @escaping () -> Void) {
         NetworkManager.shared.fetchData { result in
@@ -35,17 +34,9 @@ class HeroCollectionViewModel: HeroCollectionViewModelProtocol {
             }
         }
     }
-    
-    func numberOfItems() -> Int {
-        heroes.count
-    }
-    
+
     func heroCellViewModel(isFiltering: Bool, indexPath: IndexPath) -> HeroCellViewModelProtocol {
         HeroCellViewModel(hero: getHero(isFiltering: isFiltering)[indexPath.item])
-    }
-    
-    func numberOfItems(isFiltering: Bool) -> Int {
-        isFiltering ? filteredHeroes.count : heroes.count
     }
     
     func filterContentForSearchText(for searchText: String, scope: String = "All Heroes", completion: @escaping() -> Void) {
