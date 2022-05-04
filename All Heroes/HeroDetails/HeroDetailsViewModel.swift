@@ -96,6 +96,4 @@ class HeroDetailsViewModel: HeroDetailsViewModelProtocol {
     required init(hero: Hero) {
         self.hero = hero
     }
-    
-    
 }

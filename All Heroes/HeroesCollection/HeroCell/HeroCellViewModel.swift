@@ -10,7 +10,6 @@ import Foundation
 protocol HeroCellViewModelProtocol {
     var name: String { get }
     var imageData: Data? { get }
-    
     init(hero: Hero)
 }
 
@@ -28,6 +27,4 @@ class HeroCellViewModel: HeroCellViewModelProtocol {
     required init(hero: Hero) {
         self.hero = hero
     }
-    
-    
 }

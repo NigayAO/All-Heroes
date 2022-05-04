@@ -49,9 +49,6 @@ class HeroesCollection: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! HeroCell
-        cell.activityIndicator.startAnimating()
-        cell.activityIndicator.hidesWhenStopped = true
-        cell.imageView.layer.cornerRadius = 15
         cell.heroCellViewModel = viewModel.heroCellViewModel(isFiltering: isFiltering, indexPath: indexPath)
         return cell
     }

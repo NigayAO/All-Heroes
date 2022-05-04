@@ -14,10 +14,16 @@ class HeroCell: UICollectionViewCell {
     
     var heroCellViewModel: HeroCellViewModelProtocol! {
         didSet {
+            imageView.layer.cornerRadius = 15
+            
             nameLabel.text = heroCellViewModel.name
-            if let imageData = heroCellViewModel.imageData {
-                imageView.image = UIImage(data: imageData)
-                activityIndicator.stopAnimating()
+            DispatchQueue.global(qos: .utility).async {
+                if let imageData = self.heroCellViewModel.imageData {
+                    DispatchQueue.main.async {
+                        self.imageView.image = UIImage(data: imageData)
+                        self.activityIndicator.stopAnimating()
+                    }
+                }
             }
         }
     }
